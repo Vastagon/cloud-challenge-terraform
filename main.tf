@@ -11,12 +11,13 @@ terraform {
 }
 
 provider "azurerm" {
+  subscription_id = "e213a1d7-ec53-43b8-8c56-637302aff6d4"
   features {}
 }
 
 resource "azurerm_resource_group" "tf-website-rg" {
-  name     = "tf-website-rg"
-  location = "eastus"
+  name         = "tf-website-rg"
+  location     = "eastus"
 }
 
 # Create storage container for static website
