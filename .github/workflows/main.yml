@@ -1,0 +1,64 @@
+name: Blob storage website CI
+
+on:
+    push:
+        branches: [ master ]
+
+jobs:
+  # cypress-tests:
+  #   runs-on: ubuntu-22.04
+  #   steps:
+  #   - uses: actions/checkout@v3
+  #   - uses: azure/login@v1
+  #     with:
+  #         creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+  #   - name: Creating temp website
+  #     uses: azure/CLI@v1
+  #     with:
+  #       inlineScript: |
+  #         az storage blob upload-batch --account-name testresumevastagon --auth-mode key -d '$web' -s "./Resume Code" --overwrite
+
+
+  #   - name: Checkout
+  #     uses: actions/checkout@v3
+  #     # Install npm dependencies, cache them correctly
+  #     # and run all Cypress tests
+  #   - name: Cypress run
+  #     uses: cypress-io/github-action@v5
+        
+  #   - name: Delete testresumevastagon storage account
+  #     uses: azure/CLI@v1
+  #     with:
+  #       inlineScript: |
+  #         az storage account delete --name testresumevastagon --resource-group ResumeWebsite --yes
+
+
+
+  # Uploads the html, CSS, and JS to the public $web container
+  build:
+    # needs: cypress-tests
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v3
+    - uses: azure/login@v1
+      with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+        
+        
+    - name: Upload to blob storage
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+          az storage blob upload-batch --account-name vastagonresumewebsite --auth-mode key -d '$web' -s "./Resume Code" --overwrite
+    - name: Purge CDN endpoint
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+            az cdn endpoint purge --content-paths  "/*" --profile-name "ResumeWebsiteCDN" --name "vastagon" --resource-group "ResumeWebsite"
+
+  
+# Azure logout
+    - name: logout
+      run: |
+          az logout
