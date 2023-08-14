@@ -50,12 +50,12 @@ jobs:
       uses: azure/CLI@v1
       with:
         inlineScript: |
-          az storage blob upload-batch --account-name vastagonresumewebsite --auth-mode key -d '$web' -s "./Resume Code" --overwrite
+          az storage blob upload-batch --account-name tfwebsitesa --auth-mode key -d '$web' -s "./Resume Code" --overwrite
     - name: Purge CDN endpoint
       uses: azure/CLI@v1
       with:
         inlineScript: |
-            az cdn endpoint purge --content-paths  "/*" --profile-name "ResumeWebsiteCDN" --name "vastagon" --resource-group "ResumeWebsite"
+           # az cdn endpoint purge --content-paths  "/*" --profile-name "ResumeWebsiteCDN" --name "vastagon" --resource-group "ResumeWebsite"
 
   
 # Azure logout
