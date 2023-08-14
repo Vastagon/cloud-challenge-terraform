@@ -14,15 +14,42 @@ provider "azurerm" {
   features {}
 }
 
-resource "azurerm_resource_group" "rg" {
-  name     = "myTFResourceGroup"
-  location = "westus2"
+resource "azurerm_resource_group" "tf-website-rg" {
+  name     = "tf-website-rg"
+  location = "eastus"
 }
 
-# Create a virtual network
-resource "azurerm_virtual_network" "vnet" {
-  name                = "myTFVnet"
-  address_space       = ["10.0.0.0/16"]
-  location            = "westus2"
-  resource_group_name = azurerm_resource_group.rg.name
+# Create storage container for static website
+resource "azurerm_storage_account" "static-storage-account" {
+  name                     = "tfwebsitesa"
+  resource_group_name      = azurerm_resource_group.tf-website-rg.name
+  location                 = azurerm_resource_group.tf-website-rg.location
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+  account_kind             = "StorageV2"
+
+
+  static_website {
+    index_document = "index.html"
+  }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Create a virtual network
+# resource "azurerm_virtual_network" "vnet" {
+#  name                = "myTFVnet"
+#  address_space       = ["10.0.0.0/16"]
+#  location            = "westus2"
+#  resource_group_name = azurerm_resource_group.tf-website-rg.name
+# }

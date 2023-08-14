@@ -1,0 +1,116 @@
+:root {
+    --header-background-color: #ededed;
+    --header-border-color: #d1992a;
+    /* --font-color: #365363; */
+    --font-color: black;
+    --resume-border-divider-color: #3a373792;
+}
+
+body {
+    height: 100vh;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+    color: var(--font-color);
+}
+
+main {
+    max-width: 1000px;
+    min-width: 800px;
+    border-color: black;
+    border-width: 1px;
+    border-style: solid;
+    position: relative;
+    z-index: 0;
+}
+
+
+header {
+    display: flex;
+    justify-content: space-between;
+    background-color: var(--header-background-color);
+
+    border-width: 0 0 3px 0;
+    border-color: var(--header-border-color);
+    border-style: solid;
+}
+
+.header-left {
+    width: 20%;
+    padding-left: 5%;
+}
+
+.header-middle {
+    margin-top: 2%;
+    width: 50%;
+    text-align: center;
+}
+
+.header-right {
+    width: 25%;
+}
+
+
+
+.segment-container {
+    display: flex;
+    width: 100%;
+}
+
+.body-left-column {
+    color: var(--header-border-color);
+    margin-left: 6%;
+    margin-top: 4%;
+    width: 30%;
+}
+
+.resume-border {
+    margin-left: 5%;
+    width: 90%;
+    height: 3px;
+    background-color: var(--header-border-color);
+}
+
+
+
+.work-title {
+    margin-bottom: 0;
+}
+
+.work-date {
+    font-style: italic;
+    margin-top: 0;
+    margin-left: 2%;
+}
+
+.work-experience-list {
+    margin-top: 2%;
+}
+
+.bullet-points {
+    margin-right: 6%;
+}
+
+
+
+.skills-grid {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    text-align: center;
+    margin-top: 2.5%;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: 59%;
+}
+
+
+
+.education-header {
+    width: 18%;
+}
+
+.certification-list {
+    margin-top: 3%;
+}
