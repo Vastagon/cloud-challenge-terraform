@@ -145,32 +145,91 @@ resource "azurerm_resource_group" "function-app-rg" {
 resource "azurerm_storage_account" "functionappstorage" {
   name = "vastresumefunctionappapi"
   location = azurerm_resource_group.function-app-rg.location
-  resource_group = "azurerm_resource_group.function-app-rg.name"
+  resource_group_name = azurerm_resource_group.function-app-rg.name
   account_tier = "Standard"
   account_replication_type = "LRS"
 }
 
-# Need to update
 
-resource "azurerm_app_service_plan" "example" {
+
+resource "azurerm_app_service_plan" "app-service-plan" {
   name                = "azure-functions-test-service-plan"
-  location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.example.name
+  location            = azurerm_resource_group.function-app-rg.location
+  resource_group_name = azurerm_resource_group.function-app-rg.name
+  kind = "linux"
+  reserved            = true
+
 
   sku {
     tier = "Standard"
     size = "S1"
   }
+} 
+
+resource "azurerm_linux_function_app" "linux-function-app" {
+  name                = "vastagon-linux-function-app"
+  location            = azurerm_resource_group.function-app-rg.location
+  resource_group_name = azurerm_resource_group.function-app-rg.name
+  service_plan_id     = azurerm_app_service_plan.app-service-plan.id
+
+  storage_account_name       = azurerm_storage_account.functionappstorage.name
+  storage_account_access_key = azurerm_storage_account.functionappstorage.primary_access_key
+
+  site_config {
+    application_stack {
+      python_version = 3.9
+    }
+    cors {
+      allowed_origins = [
+        "https://VastagonCDNEndpoint.azureedge.net",
+        "https://portal.azure.com"
+      ]
+    }
+  }
 }
 
-resource "azurerm_function_app" "example" {
-  name                       = "test-azure-functions"
-  location                   = azurerm_resource_group.example.location
-  resource_group_name        = azurerm_resource_group.example.name
-  app_service_plan_id        = azurerm_app_service_plan.example.id
-  storage_account_name       = azurerm_storage_account.example.name
-  storage_account_access_key = azurerm_storage_account.example.primary_access_key
+resource "azurerm_function_app_function" "InputTriggerFunction" {
+  name            = "vastagon-function-app-function"
+  function_app_id = azurerm_linux_function_app.linux-function-app.id
+  language        = "Python"
+
+  file {
+    name    = "__init__.py"
+    content = file("InputTrigger/__init__.py")
+  }
+
+  test_data = jsonencode({
+    "name" = "Azure"
+  })
+
+  config_json = jsonencode({   
+    "bindings": [
+    {
+      "authLevel": "function",
+      "type": "httpTrigger",
+      "direction": "in",
+      "name": "req",
+      "methods": [
+        "get",
+        "post"
+      ]
+    },
+    {
+      "name": "inputDocument",
+      "type": "cosmosDB",
+      "databaseName": "ResumeWebsite",
+      "collectionName": "countContainer",
+      "direction": "in"
+    },
+    {
+      "name": "$return",
+      "type": "cosmosDB",
+      "databaseName": "ResumeWebsite",
+      "collectionName": "countContainer",
+      "createIfNotExists": true,
+      "direction": "out"
+    }
+    ]
+  })
 }
-
-
 
