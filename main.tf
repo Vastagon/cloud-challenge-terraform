@@ -73,6 +73,7 @@ resource "azurerm_resource_group" "cosmosdbrg"{
   location = "eastus"
 }
 
+# Create a CosmosDB account, database, and container
 resource "azurerm_cosmosdb_account" "cosmosdb" {
   name                = "vastagoncosmosdb"
   location            = azurerm_resource_group.cosmosdbrg.location
@@ -133,6 +134,43 @@ resource "azurerm_cosmosdb_sql_container" "count-container" {
 }
 
 
+
+# Create a Function App
+
+resource "azurerm_resource_group" "function-app-rg" {
+  name     = "vast-func-app-rg"
+  location = "eastus"
+}
+
+resource "azurerm_storage_account" "functionappstorage" {
+  name = "vastresumefunctionappapi"
+  location = azurerm_resource_group.function-app-rg.location
+  resource_group = "azurerm_resource_group.function-app-rg.name"
+  account_tier = "Standard"
+  account_replication_type = "LRS"
+}
+
+# Need to update
+
+resource "azurerm_app_service_plan" "example" {
+  name                = "azure-functions-test-service-plan"
+  location            = azurerm_resource_group.example.location
+  resource_group_name = azurerm_resource_group.example.name
+
+  sku {
+    tier = "Standard"
+    size = "S1"
+  }
+}
+
+resource "azurerm_function_app" "example" {
+  name                       = "test-azure-functions"
+  location                   = azurerm_resource_group.example.location
+  resource_group_name        = azurerm_resource_group.example.name
+  app_service_plan_id        = azurerm_app_service_plan.example.id
+  storage_account_name       = azurerm_storage_account.example.name
+  storage_account_access_key = azurerm_storage_account.example.primary_access_key
+}
 
 
 
