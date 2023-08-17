@@ -1,0 +1,8 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "DefaultEndpointsProtocol=https;AccountName=vastresumefunctionappapi;AccountKey=e++AHQWwUN24tQeUIXUalEJzUcJnCEGX69KIKIbCMuaWSzCMmSqLMKg8gbOAAWlMK79r5xoTiafB+AStNTEWzA==;EndpointSuffix=core.windows.net",
+    "FUNCTIONS_WORKER_RUNTIME": "python",
+    "CosmosDbConnectionString": "AccountEndpoint=https://vastagoncosmosdb.documents.azure.com:443/;AccountKey=CBPepTDdqn3FAHijV10kUcukwsp5GivZ1bb4M8TAcxiJdlGCjKYuLkmzbrYa30p8fqafrbjxxuszACDbuot7xA==;"
+  }
+}

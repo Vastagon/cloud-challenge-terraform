@@ -11,3 +11,4 @@ def main(req: func.HttpRequest, inputDocument: func.DocumentList):
         return totalCount
     else:
         return func.Document.from_dict({ 'id': 'count', 'count': 0 })
+

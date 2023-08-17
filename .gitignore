@@ -1,3 +1,7 @@
 gitssh
 gitssh.pub
 .terraform
+
+.python_packages
+__pycache__
+.venv
