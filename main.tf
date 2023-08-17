@@ -174,6 +174,10 @@ resource "azurerm_linux_function_app" "linux-function-app" {
   
   app_settings = {
     application_insights_key = azurerm_application_insights.application-insights.instrumentation_key
+    AzureWebJobsStorage = "DefaultEndpointsProtocol=https;AccountName=vastresumefunctionappapi;AccountKey=e++AHQWwUN24tQeUIXUalEJzUcJnCEGX69KIKIbCMuaWSzCMmSqLMKg8gbOAAWlMK79r5xoTiafB+AStNTEWzA==;EndpointSuffix=core.windows.net",
+    FUNCTIONS_WORKER_RUNTIME = "python",
+    CosmosDbConnectionString = "AccountEndpoint=https://vastagoncosmosdb.documents.azure.com:443/;AccountKey=CBPepTDdqn3FAHijV10kUcukwsp5GivZ1bb4M8TAcxiJdlGCjKYuLkmzbrYa30p8fqafrbjxxuszACDbuot7xA==;",
+    test: "test"
   }
 
   storage_account_name       = azurerm_storage_account.functionappstorage.name
