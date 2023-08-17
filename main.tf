@@ -201,7 +201,7 @@ resource "azurerm_function_app_function" "InputTriggerFunction" {
 
   file {
     name    = "__init__.py"
-    content = file("InputTrigger/__init__.py")
+    content = file("CountTrigger/__init__.py")
   }
 
   test_data = jsonencode({
