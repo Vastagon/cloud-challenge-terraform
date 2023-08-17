@@ -171,6 +171,10 @@ resource "azurerm_linux_function_app" "linux-function-app" {
   location            = azurerm_resource_group.function-app-rg.location
   resource_group_name = azurerm_resource_group.function-app-rg.name
   service_plan_id     = azurerm_app_service_plan.app-service-plan.id
+  
+  app_settings = {
+    application_insights_key = azurerm_application_insights.application-insights.instrumentation_key
+  }
 
   storage_account_name       = azurerm_storage_account.functionappstorage.name
   storage_account_access_key = azurerm_storage_account.functionappstorage.primary_access_key
@@ -185,6 +189,8 @@ resource "azurerm_linux_function_app" "linux-function-app" {
         "https://portal.azure.com"
       ]
     }
+    application_insights_key = azurerm_application_insights.application-insights.instrumentation_key
+    application_insights_connection_string = azurerm_application_insights.application-insights.connection_string
   }
 }
 
@@ -217,15 +223,15 @@ resource "azurerm_function_app_function" "InputTriggerFunction" {
     {
       "name": "inputDocument",
       "type": "cosmosDB",
-      "databaseName": "ResumeWebsite",
-      "collectionName": "countContainer",
+      "databaseName": "vastagonresumedb",
+      "collectionName": "count-container",
       "direction": "in"
     },
     {
       "name": "$return",
       "type": "cosmosDB",
-      "databaseName": "ResumeWebsite",
-      "collectionName": "countContainer",
+      "databaseName": "vastagonresumedb",
+      "collectionName": "count-container",
       "createIfNotExists": true,
       "direction": "out"
     }
@@ -233,3 +239,9 @@ resource "azurerm_function_app_function" "InputTriggerFunction" {
   })
 }
 
+resource "azurerm_application_insights" "application-insights" {
+  name                = "tf-resume-appinsights"
+  location            = azurerm_resource_group.function-app-rg.location
+  resource_group_name = azurerm_resource_group.function-app-rg.name
+  application_type    = "web"
+}
