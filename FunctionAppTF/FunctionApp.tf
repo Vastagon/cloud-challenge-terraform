@@ -1,4 +1,3 @@
-# Configure the Azure provider
 terraform {
   required_providers {
     azurerm = {
@@ -20,58 +19,8 @@ provider "azurerm" {
 }
 
 
-resource "azurerm_resource_group" "tf-website-rg" {
-  name     = "tf-website-rg"
-  location = "eastus"
-}
-
-# Create storage container for static website
-resource "azurerm_storage_account" "static-storage-account" {
-  name                     = "tfwebsitesa"
-  resource_group_name      = azurerm_resource_group.tf-website-rg.name
-  location                 = azurerm_resource_group.tf-website-rg.location
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
-  account_kind             = "StorageV2"
-
-
-  static_website {
-    index_document = "resume.html"
-  }
-}
-
-
-
-
-# Create CDN for static website
-resource "azurerm_cdn_profile" "websitecdn" {
-  name                = "resumeCDN"
-  location            = azurerm_resource_group.tf-website-rg.location
-  resource_group_name = azurerm_resource_group.tf-website-rg.name
-  sku                 = "Standard_Microsoft"
-}
-
-resource "azurerm_cdn_endpoint" "cdnendpoint" {
-  name                = "VastagonCDNEndpoint"
-  profile_name        = azurerm_cdn_profile.websitecdn.name
-  location            = azurerm_resource_group.tf-website-rg.location
-  resource_group_name = azurerm_resource_group.tf-website-rg.name
-
-  origin_host_header = "tfwebsitesa.z13.web.core.windows.net"
-
-  origin {
-    name      = "VastagonCDNEndpoint"
-    host_name = "tfwebsitesa.z13.web.core.windows.net"
-  }
-}
-
-
-
-
 
 # CosmosDB
-
-# Create Resource Group for backend and function app
 resource "azurerm_resource_group" "tf-functionapp-cosmosdb-rg" {
   name     = "tf-functionapp-cosmosdb-rg"
   location = "eastus"
