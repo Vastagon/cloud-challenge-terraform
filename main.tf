@@ -69,9 +69,8 @@ resource "azurerm_cdn_endpoint" "cdnendpoint" {
 
 
 
-# CosmosDB
 
-# Create Resource Group for backend and function app
+# CosmosDB
 resource "azurerm_resource_group" "tf-functionapp-cosmosdb-rg" {
   name     = "tf-functionapp-cosmosdb-rg"
   location = "eastus"
@@ -208,7 +207,7 @@ resource "azurerm_function_app_function" "azurerm-function-app-function" {
   }
 
   file {
-    name    = "__init__.py"
+    name    = "host.json"
     content = file("FunctionTriggers/HttpCountTrigger/host.json")
   }
 
@@ -248,6 +247,4 @@ resource "azurerm_function_app_function" "azurerm-function-app-function" {
     ]
   })
 }
-
-
 
