@@ -40,7 +40,30 @@ resource "azurerm_storage_account" "static-storage-account" {
   }
 }
 
-
+resource "azurerm_storage_blob" "website-html" {
+  name                   = "resume.html"
+  storage_account_name   = azurerm_storage_account.static-storage-account.name
+  storage_container_name = "$web"
+  content_type           = "text/html"
+  type                   = "Block"
+  source                 = "./Resume Code/resume.html"
+}
+resource "azurerm_storage_blob" "website-css" {
+  name                   = "resume.css"
+  storage_account_name   = azurerm_storage_account.static-storage-account.name
+  storage_container_name = "$web"
+  content_type           = "text/css"
+  type                   = "Block"
+  source                 = "./Resume Code/resume.css"
+}
+resource "azurerm_storage_blob" "website-js" {
+  name                   = "resume.js"
+  storage_account_name   = azurerm_storage_account.static-storage-account.name
+  storage_container_name = "$web"
+  content_type           = "text/js"
+  type                   = "Block"
+  source                 = "./Resume Code/resume.js"
+}
 
 
 # Create CDN for static website
