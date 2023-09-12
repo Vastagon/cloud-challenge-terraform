@@ -3,7 +3,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 3.0.2"
+      version = "~> 3.43.0"
     }
   }
 
@@ -15,6 +15,10 @@ provider "azurerm" {
   features {
     resource_group {
       prevent_deletion_if_contains_resources = false
+    }
+    key_vault {
+      purge_soft_delete_on_destroy    = true
+      recover_soft_deleted_key_vaults = true
     }
   }
 }
@@ -233,6 +237,13 @@ data "azurerm_storage_account_sas" "sas" {
   }
 }
 
+data "azurerm_function_app_host_keys" "get-api-url" {
+  name                = azurerm_linux_function_app.linux-function-app.name
+  resource_group_name = azurerm_linux_function_app.linux-function-app.resource_group_name
+
+  depends_on = [azurerm_linux_function_app.linux-function-app]
+}
+
 resource "azurerm_linux_function_app" "linux-function-app" {
   name                = "vastagon-function-app"
   resource_group_name = azurerm_resource_group.tf-functionapp-cosmosdb-rg.name
@@ -250,6 +261,11 @@ resource "azurerm_linux_function_app" "linux-function-app" {
     "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING" = "DefaultEndpointsProtocol=https;AccountName=${azurerm_storage_account.functionappstorage.name};AccountKey=${azurerm_storage_account.functionappstorage.primary_access_key};EndpointSuffix=core.windows.net",
     "WEBSITE_RUN_FROM_PACKAGE"                 = "https://${azurerm_storage_account.functionappstorage.name}.blob.core.windows.net/${azurerm_storage_container.function-app-container.name}/${azurerm_storage_blob.function-app-blob.name}${data.azurerm_storage_account_sas.sas.sas}"
   }
+
+  identity {
+    type = "SystemAssigned"
+  }
+
   site_config {
     application_stack {
       python_version = "3.9"
@@ -264,3 +280,45 @@ resource "azurerm_linux_function_app" "linux-function-app" {
     application_insights_connection_string = azurerm_application_insights.application-insights.connection_string
   }
 }
+data "azurerm_client_config" "current" {}
+
+resource "azurerm_key_vault" "resume-key-vault" {
+  name                        = "vastagon-key-vault"
+  location                    = azurerm_resource_group.tf-functionapp-cosmosdb-rg.location
+  resource_group_name         = azurerm_resource_group.tf-functionapp-cosmosdb-rg.name
+  enabled_for_disk_encryption = true
+  tenant_id                   = data.azurerm_client_config.current.tenant_id
+  soft_delete_retention_days  = 7
+  purge_protection_enabled    = false
+
+  sku_name = "standard"
+
+  access_policy {
+    tenant_id = data.azurerm_client_config.current.tenant_id
+    object_id = data.azurerm_client_config.current.object_id
+
+    key_permissions = [
+      "Get",
+    ]
+
+    secret_permissions = [
+      "Set",
+      "Get",
+      "Delete",
+      "Purge",
+      "Recover",
+      "List"
+    ]
+
+    storage_permissions = [
+      "Get",
+    ]
+  }
+}
+
+resource "azurerm_key_vault_secret" "resume-vault-api-key" {
+  name         = "resume-vault-api-key"
+  value        = "https://${azurerm_linux_function_app.linux-function-app.default_hostname}/api/$HttpCountTrigger?code=${data.azurerm_function_app_host_keys.get-api-url.default_function_key}"
+  key_vault_id = azurerm_key_vault.resume-key-vault.id
+}
+#   value = "https://${azurerm_linux_function_app.linux-function-app.default_hostname}/api/$HttpCountTrigger?code=${data.azurerm_function_app_host_keys.get-api-url.default_function_key}"
