@@ -4,6 +4,29 @@ on:
     push:
         branches: [ main ]
 
+jobs:
+  # cypress-tests:
+  #   runs-on: ubuntu-22.04
+  #   steps:
+  #   - uses: actions/checkout@v3
+  #   - uses: azure/login@v1
+  #     with:
+  #         creds: ${{ secrets.AZURE_CREDENTIALS_DEVELOPMENT }}
+
+    # - name: Checkout
+    #   uses: actions/checkout@v3
+    #   # Install npm dependencies, cache them correctly
+    #   # and run all Cypress tests
+    # - name: Cypress run
+    #   uses: cypress-io/github-action@v5
+        
+    # - name: Delete testresumevastagon storage account
+    #   uses: azure/CLI@v1
+    #   with:
+    #     inlineScript: |
+    #       az storage account delete --name testresumevastagon --resource-group ResumeWebsite --yes
+
+
 
   # Uploads the html, CSS, and JS to the public $web container
   build:
@@ -25,7 +48,7 @@ on:
       uses: azure/CLI@v1
       with:
         inlineScript: |
-          az cdn endpoint purge --content-paths  "/*" --profile-name "resumeCDN" --name "VastagonCDNEndpoint" --resource-group "tf-website-rg"
+            az cdn endpoint purge --content-paths  "/*" --profile-name "ResumeCDN" --name "VastagonCDNEndpoint" --resource-group "tf-website-rg"
 
   
 # Azure logout
